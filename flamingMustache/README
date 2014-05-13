@@ -1,0 +1,16 @@
+The basic interface with the poofer is a trailer hitch connection. (http://www.amazon.com/gp/product/B001EP0G72) wired like this:
+
+ 3  /   \  4
+ 2 | Co  | 5
+ 1  \   /  6
+
+1-6 will be poofers from left to right and C is your common. To activate a Solenoid you send send 110AC volts to any or all of 1-6.
+
+I've been using sainsmart 8 port relays to do the switching (http://www.amazon.com/gp/product/B0057OC5WK).
+
+Everything else is up to you... 
+
+some starters...
+110 inlet with fuse and switch: http://www.amazon.com/gp/product/B008DS1NC0
+male->female pin cables for arduino: http://www.amazon.com/gp/product/B00A6SOGC4
+USB B female->male flsh mount: http://www.amazon.com/gp/product/B002M8VBIS
