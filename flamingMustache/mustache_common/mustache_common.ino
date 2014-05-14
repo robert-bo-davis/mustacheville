@@ -15,10 +15,10 @@
 */
 
 // Length of poofs in ms
-const int biggest  = 1000;
-const int big      = 600;
-const int small    = 300;
-const int smallest = 100;
+const int biggest  = 250;
+const int big      = 175;
+const int small    = 125;
+const int smallest = 75;
 
 // These set up various bits
 // of the random show.
@@ -46,45 +46,94 @@ const unsigned long autoHistoryReset = 60 * 1000; //60s
 // shortest time.  If you want to make a longer pause
 // you could use B00000010 which will add about a half
 // a second pause.
-const int programCount     = 3;
+const int programCount     = 1;
 const int maxProgramLength = 50;
 PROGMEM prog_uint8_t programs[3][50] = { // these are stored in flash memory see http://www.arduino.cc/en/Reference/PROGMEM
    {
       B11111100,
-      B00000010,
+      B00000011,
       B10000110,
+      B00000001,
       B01001010,
+      B00000001,
       B00110010,
+      B00000001,
       B01001010,
+      B00000001,
       B10000110,
-      B00000010,
+      B00000011,
+      B11111100,
+      B00000011,
+      B10000110,
+      B00000001,
+      B01001010,
+      B00000001,
+      B00110010,
+      B00000001,
+      B01001010,
+      B00000001,
+      B10000110,
+      B00000011,
       0
-   },
+   },/*
    {
       B10000000,
+      B00000010,
       B01000000,
+      B00000010,
       B00100000,
+      B00000010,
       B00010000,
+      B00000010,
       B00001000,
+      B00000010,
       B00000100,
+      B00000010,
       B00001000,
+      B00000010,
       B00010000,
+      B00000010,
       B00100000,
+      B00000010,
       B01000000,
+      B00000010,
+      B10000000,
+      B00000010,
+      B01000000,
+      B00000010,
+      B00100000,
+      B00000010,
+      B00010000,
+      B00000010,
+      B00001000,
+      B00000010,
+      B00000100,
+      B00000010,
+      B00001000,
+      B00000010,
+      B00010000,
+      B00000010,
+      B00100000,
+      B00000010,
+      B01000000,
+      B00000010,
       0
-   },
+   },*/
    {
-      B00110001,
+      B00110010,
+      B00000001,
       B01111110,
-      B00000010,
+      B00000011,
       B11111100,
-      B00000010,
+      B00000011,
       B01111010,
-      B00110001,
+      B00000001,
+      B00110010,
+      B00000001,
       B01111010,
-      B00000010,
+      B00000011,
       B11111100,
-      B00000010,
+      B00000011,
       B01111010,
       0
    },
@@ -124,7 +173,7 @@ PROGMEM prog_uint8_t eggs[2][22] = { // these are stored in flash memory see htt
       B00000001,
       B01000000,
       B00000001,
-      B10000000,      
+      B10000000,     
       0,
     },
     {

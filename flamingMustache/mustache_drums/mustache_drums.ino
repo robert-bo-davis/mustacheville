@@ -15,10 +15,10 @@
 */
 
 // Length of poofs in ms
-const int biggest  = 1000;
-const int big      = 600;
-const int small    = 300;
-const int smallest = 100;
+const int biggest  = 125;
+const int big      = 100;
+const int small    = 75;
+const int smallest = 50;
 
 // These set up various bits
 // of the random show.
@@ -180,6 +180,10 @@ const int myButs[]      = {but1, but2, but3, but4, but5, but1};
 // for 5 button set up:
 // const int myButs[]      = {but1, but2, but3, but4, but5, but1};
 const int poofLengths[] = {smallest, small, big, biggest};
+
+int lastPoofs[] = {0,0,0,0,0,0};
+int poofThreshold = 6;
+
 
 /*
   poof() sends a signal to the relay to close
@@ -518,15 +522,41 @@ void checkButtons(){
   int pSolsIndex = 0;
   int uSols[6];
   int uSolsIndex = 0;
+  int length = 0;
   for (int i = 0; i < SOL_COUNT; i++) {
-    int val = analogRead(myButs[i]);
-    if(val < 500){
-       Serial.print(mySols[i]);
-       Serial.print(" value: ");
-       Serial.println(val);
+   int val = analogRead(myButs[i]);
+   if (lastPoofs[i] && lastPoofs[i] <= poofThreshold){
+     if (lastPoofs[i] == poofThreshold){
+        lastPoofs[i] = 0; 
+     }
+     else{ 
+       lastPoofs[i]++;
+     }
+     Serial.print("lastpoofs: ");
+      Serial.println(lastPoofs[i]);
+   }
+   else if(val < 400 && val > 0){
+        Serial.print(mySols[i]);
+        Serial.print(" value: ");
+        Serial.println(val);
        //Serial.print("poof ");
        //Serial.println(mySols[i]);
        pSols[pSolsIndex] = mySols[i];
+       if (i != 0 && i != 5){
+         if (val > 300){
+           length = poofLengths[0];
+         }
+         else if(val > 200){
+           length = poofLengths[1];
+         }
+         else if(val > 150){
+           length = poofLengths[2];
+         }
+         else{
+           length = poofLengths[3];
+         }
+       }
+       lastPoofs[i] = 1;
        pSolsIndex++;
     }
     else{
