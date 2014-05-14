@@ -20,6 +20,10 @@ const int big      = 100;
 const int small    = 75;
 const int smallest = 50;
 
+// to try to cut out interference between drum pad sensors... we pause for a bit
+// after each hit.
+const int drumDelay = 100;
+
 // These set up various bits
 // of the random show.
 // *remember unsigned ints have a max value of 65,535 on arduino
@@ -577,6 +581,9 @@ void checkButtons(){
   keepHistory(pSols);
   unpoof(uSols, 0);
   poof(pSols, 0);
+  if (pSolsIndex){
+    delay(drumDelay); 
+  }
 }
 
 /*

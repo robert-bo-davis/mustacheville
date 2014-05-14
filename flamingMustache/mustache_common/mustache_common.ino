@@ -32,6 +32,12 @@ const unsigned long maxHistoryPause  = 4 * 1000;   //5s
 // automatically reset history if nobody toches buttons for a while
 const unsigned long autoHistoryReset = 60 * 1000; //60s
 
+// so this is used for 000 poofs during program play
+// it makes the gaps created by poofing no poofers
+// x times as long as the smallest-biggest settings
+// hacky?  yes?  serves a purpose? double yes.
+const int pauseMultiplier = 3;
+
 // These are the pre-programed "shows".  They use a
 // very basic 8 bit storage system.  The first 6 0/1s
 // after the B tell the program which burners to turn
@@ -238,7 +244,16 @@ const int poofLengths[] = {smallest, small, big, biggest};
   and then closes it.
 */
 void poof(int* sols, int length){
+  int multiplier = pauseMultiplier;
   for (int i = 0; i < SOL_COUNT; i++) {
+    if (i == 1){
+        // so this is a hack.  We want to pause for 
+        // longer than our poofs since poofs got all
+        // short.  to do this i'm adding a multipler
+        // that gets reset if we actually poof at all
+        // this means all 000000s will just pause x times as long
+        multiplier = 1;
+    }
     if (!sols[i]){
       break;
     }
@@ -248,6 +263,7 @@ void poof(int* sols, int length){
   }
 
   if (length){
+    length *= multiplier;
     delay(length);
     unpoof(sols, 0);
   }
