@@ -52,9 +52,89 @@ const int pauseMultiplier = 3;
 // shortest time.  If you want to make a longer pause
 // you could use B00000010 which will add about a half
 // a second pause.
-const int programCount     = 1;
+const int programCount     = 7;
 const int maxProgramLength = 50;
-PROGMEM prog_uint8_t programs[3][50] = { // these are stored in flash memory see http://www.arduino.cc/en/Reference/PROGMEM
+PROGMEM prog_uint8_t programs[7][50] = { // these are stored in flash memory see http://www.arduino.cc/en/Reference/PROGMEM
+    {
+      B10110101,
+      B00000001,
+      B01001001,
+      B00000001,
+      B10000101,
+      B00000001,
+      B01111001,
+      B00000001,
+      B00110001,
+      B00000001,
+      0
+   },
+    {
+      B00110001,
+      B00000001,
+      B01111001,
+      B00000001,
+      B11111101,
+      B00000001,
+      B01111001,
+      B00000001,
+      B00110001,
+      B00000001,
+      0
+   },
+    {
+      B10000001,
+      B00000001,
+      B01000001,
+      B00000001,
+      B00100001,
+      B00000001,
+      B00010000,
+      B00000001,
+      B00001001,
+      B00000001,
+      B00000101,
+      B00000001,
+      B00001001,
+      B00000001,
+      B00010001,
+      B00000001,
+      B00100001,
+      B00000001,
+      B01000001,
+      B00000001,
+      B10000001,
+      B00000001,
+      B11001100,
+      B00110001,
+      0
+   },
+    {
+      B10000100,
+      B00000011,
+      B01001000,
+      B00000001,
+      B00110000,
+      B00000001,
+      B01111000,
+      B00000001,
+      B11111110,
+      B00000001,
+      B10101000,
+      B00000011,
+      B01010100,
+      B00000011,
+      B11111110,
+      B00000001,
+      B11001100,
+      B00000001,
+      B00110010,
+      B00000001,
+      B01001010,
+      B00000001,
+      B11001110,
+      B00000011,
+      0
+   },
    {
       B11111100,
       B00000011,
@@ -81,7 +161,7 @@ PROGMEM prog_uint8_t programs[3][50] = { // these are stored in flash memory see
       B10000110,
       B00000011,
       0
-   },/*
+   },
    {
       B10000000,
       B00000010,
@@ -124,7 +204,7 @@ PROGMEM prog_uint8_t programs[3][50] = { // these are stored in flash memory see
       B01000000,
       B00000010,
       0
-   },*/
+   },
    {
       B00110010,
       B00000001,
@@ -142,7 +222,7 @@ PROGMEM prog_uint8_t programs[3][50] = { // these are stored in flash memory see
       B00000011,
       B01111010,
       0
-   },
+   }
 };
 
 prog_uint16_t butHistory[120][2]; // used to store button press history for easter eggs/replay
@@ -191,7 +271,7 @@ PROGMEM prog_uint8_t eggs[2][22] = { // these are stored in flash memory see htt
       B00000001,
       B00110000,
       0
-    }
+    },
 };
 
 unsigned long lastTime; // stores the last change time used to keep history
@@ -206,6 +286,10 @@ const int butPlayHistory = 11;
 
 // button to reset history
 const int butResetHistory = 10;
+
+const int allButton = 9;
+
+const int endsButton = 8;
 
 // button pins
 const int but1 = 2;
@@ -234,6 +318,8 @@ const int myButs[]      = {but1, but2, but3, but4, but5, but6};
 // for 5 button set up:
 // const int myButs[]      = {but1, but2, but3, but4, but5, but1};
 const int poofLengths[] = {smallest, small, big, biggest};
+
+boolean programMode = false;
 
 /*
   poof() sends a signal to the relay to close
@@ -537,6 +623,7 @@ void randomShow(){
 
 void pauseAndBreakForSwitch(int pause){
   for (int p = (pause / 10); p>=0;p--){
+    checkProgButtons();
     if (!checkProgSwitch()){
        break;
     }
@@ -576,27 +663,39 @@ void playProgram(int p, boolean break_for_switch){
   the appropriate solenoids.
 */
 void checkButtons(){
-  checkResetHistory();
-  checkPlayHistory();
+  //checkResetHistory();
+  //checkPlayHistory();
   int pSols[6];
   int pSolsIndex = 0;
   int uSols[6];
   int uSolsIndex = 0;
-  for (int i = 0; i < SOL_COUNT; i++) {
-    int val = digitalRead(myButs[i]);
-    if(val == LOW){
-       //Serial.print("poof ");
-       //Serial.println(mySols[i]);
+  if (digitalRead(allButton) == LOW){
+     for (int i = 0; i < SOL_COUNT; i++) {
        pSols[pSolsIndex] = mySols[i];
        pSolsIndex++;
-    }
-    else{
-       if (!digitalRead(mySols[i])){
-         //Serial.print("UNPOOF ");
-         //Serial.println(mySols[i]);
-         uSols[uSolsIndex] = mySols[i];
-         uSolsIndex++;
-       }
+     }
+  }
+  else if(digitalRead(endsButton) == LOW){
+    pSols[0] = mySols[0];
+    pSols[1] = mySols[5];
+    pSolsIndex = 2;
+  }
+  else{
+    for (int i = 0; i < SOL_COUNT; i++) {
+      if(digitalRead(myButs[i]) == LOW){
+         Serial.print("poof ");
+         Serial.println(mySols[i]);
+         pSols[pSolsIndex] = mySols[i];
+         pSolsIndex++;
+      }
+      else{
+         if (!digitalRead(mySols[i])){
+           //Serial.print("UNPOOF ");
+           //Serial.println(mySols[i]);
+           uSols[uSolsIndex] = mySols[i];
+           uSolsIndex++;
+         }
+      }
     }
   }
   if(uSolsIndex < SOL_COUNT){
@@ -605,9 +704,22 @@ void checkButtons(){
   if(pSolsIndex < SOL_COUNT){
     pSols[pSolsIndex] = 0;
   }
-  keepHistory(pSols);
+  //keepHistory(pSols);
   unpoof(uSols, 0);
   poof(pSols, 0);
+}
+
+/*
+  checkProgButtons() loops through the buttons
+  checking for pressed buttons and starts the appropriate
+  program
+*/
+void checkProgButtons(){
+  for (int i = 0; i < SOL_COUNT; i++) {
+    if(digitalRead(myButs[i]) == LOW){
+       playProgram(i, false);
+    }
+  }
 }
 
 /*
@@ -633,10 +745,15 @@ void checkPlayHistory(){
   has been activated and false if it hasn't
 */
 boolean checkProgSwitch(){
-  if(digitalRead(progSwitch) == HIGH){
-    return true;
+  if(digitalRead(progSwitch) == LOW){
+    Serial.print("changing programMode from: ");
+    Serial.print(programMode);
+    Serial.print(" to: ");
+    programMode = !programMode;
+    Serial.println(programMode);
+    delay(1000);
   }
-  return false;
+  return programMode;
 }
 
 void setup(){
@@ -663,6 +780,14 @@ void setup(){
   // set up playHistory button
   pinMode(butPlayHistory, INPUT);
   digitalWrite(butPlayHistory, HIGH);
+  
+  // set up allButton button
+  pinMode(allButton, INPUT);
+  digitalWrite(allButton, HIGH);
+  
+  // set up endsButton button
+  pinMode(endsButton, INPUT);
+  digitalWrite(endsButton, HIGH);
  
   // loop through and set up solenoid pins.
   for (int i = 0; i <= 5; i++) {
@@ -678,9 +803,9 @@ void loop(){
    poof(sols, smallest);
    delay(smallest);
   */
-
   if (checkProgSwitch()){
     resetHistory();
+    checkProgButtons();
     randomShow();
   }
   else{

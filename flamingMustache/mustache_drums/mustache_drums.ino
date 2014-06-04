@@ -15,10 +15,10 @@
 */
 
 // Length of poofs in ms
-const int biggest  = 125;
-const int big      = 100;
-const int small    = 75;
-const int smallest = 50;
+const int biggest  = 150;
+const int big      = 125;
+const int small    = 100;
+const int smallest = 75;
 
 // to try to cut out interference between drum pad sensors... we pause for a bit
 // after each hit.
@@ -95,9 +95,9 @@ PROGMEM prog_uint8_t programs[3][50] = { // these are stored in flash memory see
    },
 };
 
-prog_uint16_t butHistory[120][2]; // used to store button press history for easter eggs/replay
+prog_uint16_t butHistory[1][2]; // used to store button press history for easter eggs/replay
 unsigned int butHistoryIndex        = 0;
-const unsigned int maxHistoryLength = 120;
+const unsigned int maxHistoryLength = 1;
 
 // easter egg programs - stores easter egg programs
 // if the required buttons are (**pressed for shorter than
@@ -520,8 +520,8 @@ void playProgram(int p, boolean break_for_switch){
   the appropriate solenoids.
 */
 void checkButtons(){
-  checkResetHistory();
-  checkPlayHistory();
+  //checkResetHistory();
+  //checkPlayHistory();
   int pSols[6];
   int pSolsIndex = 0;
   int uSols[6];
@@ -529,7 +529,7 @@ void checkButtons(){
   int length = 0;
   for (int i = 0; i < SOL_COUNT; i++) {
    int val = analogRead(myButs[i]);
-   if (lastPoofs[i] && lastPoofs[i] <= poofThreshold){
+   if (i != 0 && i !=5 && lastPoofs[i] && lastPoofs[i] <= poofThreshold){
      if (lastPoofs[i] == poofThreshold){
         lastPoofs[i] = 0; 
      }
@@ -578,12 +578,14 @@ void checkButtons(){
   if(pSolsIndex < SOL_COUNT){
     pSols[pSolsIndex] = 0;
   }
-  keepHistory(pSols);
+  //keepHistory(pSols);
   unpoof(uSols, 0);
   poof(pSols, 0);
+  /*
   if (pSolsIndex){
     delay(drumDelay); 
   }
+  */
 }
 
 /*

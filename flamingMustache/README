@@ -1,8 +1,8 @@
 The basic interface with the poofer is a trailer hitch connection. (http://www.amazon.com/gp/product/B001EP0G72) wired like this:
 
- 3  /   \  4
- 2 | Co  | 5
- 1  \   /  6
+ 4  /   \  3
+ 5 | Co  | 2
+ 6  \   /  1
 
 1-6 will be poofers from left to right and C is your common. To activate a Solenoid you send send 110AC volts to any or all of 1-6.
 
