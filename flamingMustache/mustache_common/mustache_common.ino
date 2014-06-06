@@ -36,7 +36,7 @@ const unsigned long autoHistoryReset = 60 * 1000; //60s
 // it makes the gaps created by poofing no poofers
 // x times as long as the smallest-biggest settings
 // hacky?  yes?  serves a purpose? double yes.
-const int pauseMultiplier = 3;
+const int pauseMultiplier = 2;
 
 // These are the pre-programed "shows".  They use a
 // very basic 8 bit storage system.  The first 6 0/1s
@@ -314,7 +314,7 @@ const int sol6 = 14;
 // and poof lengths used for bin storage and 
 // easy looping
 const int mySols[]      = {sol1, sol2, sol3, sol4, sol5, sol6};
-const int myButs[]      = {but1, but2, but3, but4, but5, but6};
+const int myButs[]      = {but1, but2, but3, but4, but5, but6, 8, 9, 10, 11};
 // for 5 button set up:
 // const int myButs[]      = {but1, but2, but3, but4, but5, but1};
 const int poofLengths[] = {smallest, small, big, biggest};
@@ -715,7 +715,10 @@ void checkButtons(){
   program
 */
 void checkProgButtons(){
-  for (int i = 0; i < SOL_COUNT; i++) {
+  for (int i = 0; i < programCount; i++) {
+    if (i >= 10){
+        return; 
+    }
     if(digitalRead(myButs[i]) == LOW){
        playProgram(i, false);
     }

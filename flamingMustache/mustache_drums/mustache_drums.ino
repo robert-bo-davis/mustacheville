@@ -24,6 +24,10 @@ const int smallest = 75;
 // after each hit.
 const int drumDelay = 100;
 
+const int poofLimit = 1000;
+const int poofLimitMultiplier = 3;
+unsigned long poofStart;
+
 // These set up various bits
 // of the random show.
 // *remember unsigned ints have a max value of 65,535 on arduino
@@ -526,7 +530,8 @@ void checkButtons(){
   int pSolsIndex = 0;
   int uSols[6];
   int uSolsIndex = 0;
-  int length = 0;
+  //int length = 0;
+  int ulength = 0;
   for (int i = 0; i < SOL_COUNT; i++) {
    int val = analogRead(myButs[i]);
    if (i != 0 && i !=5 && lastPoofs[i] && lastPoofs[i] <= poofThreshold){
@@ -537,7 +542,7 @@ void checkButtons(){
        lastPoofs[i]++;
      }
      Serial.print("lastpoofs: ");
-      Serial.println(lastPoofs[i]);
+     Serial.println(lastPoofs[i]);
    }
    else if(val < 400 && val > 0){
         Serial.print(mySols[i]);
@@ -546,7 +551,32 @@ void checkButtons(){
        //Serial.print("poof ");
        //Serial.println(mySols[i]);
        pSols[pSolsIndex] = mySols[i];
-       if (i != 0 && i != 5){
+       // only do shit to bass pedal
+       if (i == 0 || i == 5){
+         if (poofStart){
+           unsigned long length = (millis() - poofStart);
+           Serial.print("length: ");
+           Serial.println(length);
+           if (length > (poofLimit + 50)){ // if you release and come back we don't want to punish you.
+             poofStart = millis();
+           }
+           else if (length >= poofLimit){
+             uSols[uSolsIndex] = mySols[i];
+             uSolsIndex++;
+             if (i == 5){
+               poofStart = 0;
+               ulength = poofLimit * poofLimitMultiplier;
+             }
+           }
+         }
+         else{
+           poofStart = millis();
+           Serial.print("setting poofStart to:  ");
+           Serial.println(poofStart);
+         }
+       }
+       else{ // spplies to everything else
+        /*
          if (val > 300){
            length = poofLengths[0];
          }
@@ -559,11 +589,15 @@ void checkButtons(){
          else{
            length = poofLengths[3];
          }
+        */
        }
        lastPoofs[i] = 1;
        pSolsIndex++;
     }
     else{
+       if (i == 0 || i == 5){
+         poofStart = 0; 
+       }
        if (!digitalRead(mySols[i])){
          //Serial.print("UNPOOF ");
          //Serial.println(mySols[i]);
@@ -579,7 +613,7 @@ void checkButtons(){
     pSols[pSolsIndex] = 0;
   }
   //keepHistory(pSols);
-  unpoof(uSols, 0);
+  unpoof(uSols, ulength);
   poof(pSols, 0);
   /*
   if (pSolsIndex){
