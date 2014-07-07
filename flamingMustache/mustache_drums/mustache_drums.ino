@@ -532,9 +532,14 @@ void checkButtons(){
   int uSolsIndex = 0;
   //int length = 0;
   int ulength = 0;
+  boolean punish = false;
   for (int i = 0; i < SOL_COUNT; i++) {
    int val = analogRead(myButs[i]);
-   if (i != 0 && i !=5 && lastPoofs[i] && lastPoofs[i] <= poofThreshold){
+   if (punish){
+     uSols[uSolsIndex] = mySols[i];
+     uSolsIndex++;
+   }
+   else if (i != 0 && i !=5 && lastPoofs[i] && lastPoofs[i] <= poofThreshold){
      if (lastPoofs[i] == poofThreshold){
         lastPoofs[i] = 0; 
      }
@@ -552,7 +557,7 @@ void checkButtons(){
        //Serial.println(mySols[i]);
        pSols[pSolsIndex] = mySols[i];
        // only do shit to bass pedal
-       if (i == 0 || i == 5){
+       if (i == 0){
          if (poofStart){
            unsigned long length = (millis() - poofStart);
            Serial.print("length: ");
@@ -561,12 +566,11 @@ void checkButtons(){
              poofStart = millis();
            }
            else if (length >= poofLimit){
+             punish = true;
              uSols[uSolsIndex] = mySols[i];
              uSolsIndex++;
-             if (i == 5){
-               poofStart = 0;
-               ulength = poofLimit * poofLimitMultiplier;
-             }
+             poofStart = 0;
+             ulength = poofLimit * poofLimitMultiplier;
            }
          }
          else{
